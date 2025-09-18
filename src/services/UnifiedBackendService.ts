@@ -167,6 +167,41 @@ class UnifiedBackendService {
     }
   }
 
+  public async loginAsGuest(): Promise<LoginResult> {
+    try {
+      console.log('👋 Logging in as Guest...');
+      const guestUser = this.getGuestUser();
+      
+      localStorage.setItem('user_id', guestUser.id);
+      localStorage.setItem('user_data', JSON.stringify(guestUser));
+      
+      return {
+        success: true,
+        user: guestUser,
+        message: 'Logged in as guest successfully',
+      };
+    } catch (error) {
+      console.error('❌ Guest login error:', error);
+      return {
+        success: false,
+        message: 'Guest login failed',
+      };
+    }
+  }
+
+  private getGuestUser(): User {
+    return {
+      id: 'guest',
+      email: 'guest@loyaltyiq.com',
+      firstName: 'Guest',
+      lastName: 'User',
+      role: 'USER',
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+  }
+
 
 
   private generateToken(userId: string): string {
@@ -178,12 +213,27 @@ class UnifiedBackendService {
   }
 
   public getCurrentUser(): User | null {
-    const token = localStorage.getItem('auth_token');
     const userId = localStorage.getItem('user_id');
+    if (!userId) return null;
+
+    // Handle guest user separately
+    if (userId === 'guest') {
+      const storedGuestData = localStorage.getItem('user_data');
+      if (storedGuestData) {
+        try {
+          return JSON.parse(storedGuestData);
+        } catch (e) {
+          console.error('Error parsing guest user data:', e);
+          // Fallback to generating a new guest object
+        }
+      }
+      return this.getGuestUser();
+    }
+
+    // For regular users, a token must be present
+    const token = localStorage.getItem('auth_token');
+    if (!token) return null;
     
-    if (!token || !userId) return null;
-    
-    // Check if we have stored user data
     const storedUserData = localStorage.getItem('user_data');
     if (storedUserData) {
       try {
@@ -335,6 +385,14 @@ class UnifiedBackendService {
   }
 
   public async getUserTransactions(userId: string): Promise<Transaction[]> {
+    if (userId === 'guest') {
+      return [
+        { id: 'gt1', userId: 'guest', type: 'EARN', points: 500, reason: 'Welcome Bonus', timestamp: new Date(Date.now() - 2 * 24 * 3600 * 1000).toISOString() },
+        { id: 'gt2', userId: 'guest', type: 'EARN', points: 250, reason: 'Completed Profile', timestamp: new Date(Date.now() - 1 * 24 * 3600 * 1000).toISOString() },
+        { id: 'gt3', userId: 'guest', type: 'REDEEM', points: 100, reason: 'Redeemed for coffee', timestamp: new Date().toISOString() },
+        { id: 'gt4', userId: 'guest', type: 'EARN', points: 850, reason: 'Quiz Challenge', timestamp: new Date().toISOString() },
+      ];
+    }
     try {
       const response = await this.javaBackendApi.get(`/api/transactions/${userId}`);
       if (response.data) {
