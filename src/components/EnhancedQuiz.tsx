@@ -74,6 +74,20 @@ const EnhancedQuiz: React.FC<EnhancedQuizProps> = ({ quizId, onComplete }) => {
 
   const backendService = UnifiedBackendService.getInstance();
 
+    // Start the quiz
+    const startQuiz = () => {
+      setIsStarted(true);
+      setIsCompleted(false);
+      setCurrentQuestionIndex(0);
+      setSelectedAnswers({});
+      setShowResults(false);
+      setScore(0);
+      setPointsEarned(0);
+      if (quiz && quiz.timeLimitMinutes) {
+        setTimeLeft(quiz.timeLimitMinutes * 60);
+      }
+    };
+
   const loadQuiz = React.useCallback(async () => {
     try {
       setLoading(true);
@@ -117,6 +131,28 @@ const EnhancedQuiz: React.FC<EnhancedQuizProps> = ({ quizId, onComplete }) => {
     setIsCompleted(true);
     calculateScore();
   }, [calculateScore]);
+
+  // Removed duplicate startQuiz function
+
+  const handleAnswerSelect = (questionId: string, answer: string) => {
+    setSelectedAnswers(prev => ({
+      ...prev,
+      [questionId]: answer
+    }));
+  };
+
+  const handleNextQuestion = () => {
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(prev => prev + 1);
+    }
+  };
+
+  const handlePreviousQuestion = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(prev => prev - 1);
+    }
+  };
+
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
