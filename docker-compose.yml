@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: loyaltyiq-frontend
+    ports:
+      - "3000:80"
+    environment:
+      - NODE_ENV=production
+      - REACT_APP_JAVA_BACKEND_URL=http://java-backend:8080
+      - REACT_APP_PYTHON_AI_URL=http://python-ai:8000
+    networks:
+      - loyalty_network
+    restart: unless-stopped
+    depends_on:
+      java-backend:
+        condition: service_healthy
+      python-ai:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Development service (optional)
+  frontend-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: loyaltyiq-frontend-dev
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=development
+      - REACT_APP_JAVA_BACKEND_URL=http://java-backend:8080
+      - REACT_APP_PYTHON_AI_URL=http://python-ai:8000
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - loyalty_network
+    restart: unless-stopped
+    depends_on:
+      java-backend:
+        condition: service_healthy
+      python-ai:
+        condition: service_healthy
+    profiles:
+      - dev
+
+networks:
+  loyalty_network:
+    external: true
