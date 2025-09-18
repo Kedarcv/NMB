@@ -103,13 +103,17 @@ class UnifiedBackendService {
     console.log(`🌐 Java Backend URL: ${this.JAVA_BACKEND_URL}`);
     console.log(`🤖 Python AI Service URL: ${this.PYTHON_AI_URL}`);
     
-    try {
-      // Test backend connectivity
-      await this.testBackendConnectivity();
-      console.log('✅ UnifiedBackendService initialized successfully');
-    } catch (error) {
-      console.error('❌ Error initializing UnifiedBackendService:', error);
-      throw error;
+    // Only test backend connectivity if not a guest user
+    if (this.getCurrentUserId() !== 'guest') {
+      try {
+        await this.testBackendConnectivity();
+        console.log('✅ UnifiedBackendService initialized successfully');
+      } catch (error) {
+        console.error('❌ Error initializing UnifiedBackendService:', error);
+        throw error;
+      }
+    } else {
+      console.log('✅ UnifiedBackendService initialized for guest user (backend connectivity tests skipped).');
     }
   }
 

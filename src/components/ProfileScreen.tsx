@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'; // eslint-disable-line // eslint-disable-line
+import React, { useState, useEffect } from 'react'; // eslint-disable-line @typescript-eslint/no-unused-vars
 import {
   Box,
   Typography,
