@@ -116,7 +116,7 @@ interface PromotionFormData {
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
   const [tabValue, setTabValue] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState({ open: false, message: '', severity: 'success' as any });
   const [overviewData, setOverviewData] = useState<any>(null);
   const [users, setUsers] = useState<any[]>([]);
@@ -1145,3 +1145,4 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
 };
 
 export default AdminDashboard;
+

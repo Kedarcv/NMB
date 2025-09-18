@@ -1,54 +1,47 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Chip,
+  Snackbar,
+  Alert,
+  // Removed duplicate icon imports
   Box,
   Card,
   CardContent,
   Typography,
   Button,
-  Grid,
-  Chip,
+  Divider,
+  Fab,
+  Tooltip,
+  Badge,
   IconButton,
+  Avatar,
+  LinearProgress,
   Tabs,
   Tab,
-  Stack,
-  Avatar,
-  Badge,
-  Paper,
-  LinearProgress,
-  Alert,
-  Snackbar,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  Divider,
-  CircularProgress,
-  Fab,
-  Tooltip
 } from '@mui/material';
+  import {
+    Map as MapIcon,
+    Payment as PaymentIcon,
+    QrCode as QrCodeIcon,
+  } from '@mui/icons-material';
 import {
   Dashboard as DashboardIcon,
-  Quiz as QuizIcon,
-  Map as MapIcon,
-  Payment as PaymentIcon,
-  QrCode as QrCodeIcon,
-  Star as StarIcon,
-  TrendingUp as TrendingUpIcon,
-  AccountBalance as AccountBalanceIcon,
-  History as HistoryIcon,
   Add as AddIcon,
   Refresh as RefreshIcon,
   Notifications as NotificationsIcon,
   Settings as SettingsIcon,
-  CheckCircle as CheckCircleIcon,
-  Warning as WarningIcon,
   Info as InfoIcon,
   LocationOn as LocationIcon,
-  ShoppingCart as ShoppingIcon,
   EmojiEvents as TrophyIcon,
-  Timeline as TimelineIcon
+  Timeline as TimelineIcon,
+  Quiz as QuizIcon,
+  Star as StarIcon
 } from '@mui/icons-material';
-import UnifiedBackendService from '../services/UnifiedBackendService';
+// Removed unused UnifiedBackendService import
 import EnhancedQuiz from './EnhancedQuiz';
 import InteractiveMap from './InteractiveMap';
 import PaymentManagement from './PaymentManagement';
@@ -86,16 +79,12 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ user }) => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // Removed unused 'error' state
   const [notification, setNotification] = useState({ open: false, message: '', severity: 'success' as any });
 
-  const backendService = UnifiedBackendService.getInstance();
+    // Removed unused 'backendService' variable
 
-  useEffect(() => {
-    loadDashboardData();
-  }, []);
-
-  const loadDashboardData = async () => {
+  const loadDashboardData = useCallback(async () => {
     try {
       setLoading(true);
       // Load user stats and recent activity
@@ -147,11 +136,17 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ user }) => {
       setRecentActivity(mockActivity);
     } catch (error) {
       console.error('Error loading dashboard data:', error);
-      setError('Failed to load dashboard information');
+      // Error state removed, log to console only
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    loadDashboardData();
+  }, [loadDashboardData]);
+
+  // Removed duplicate loadDashboardData function
 
   const showNotification = (message: string, severity: 'success' | 'error' | 'warning' | 'info' = 'success') => {
     setNotification({ open: true, message, severity });
