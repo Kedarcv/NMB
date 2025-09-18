@@ -67,7 +67,8 @@ import {
   Save as SaveIcon,
   Close as CloseIcon
 } from '@mui/icons-material';
-import { LineChart, BarChart, PieChart } from '@mui/x-charts';
+// import { LineChart, BarChart, PieChart } from '@mui/x-charts';
+// TODO: Replace with a compatible chart library (e.g., recharts, chart.js)
 import UnifiedBackendService, { User } from '../services/UnifiedBackendService';
 
 interface AdminDashboardProps {
@@ -802,11 +803,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
               <Card>
                 <CardHeader title="User Growth" />
                 <CardContent>
-                  <LineChart
-                    xAxis={[{ data: userGrowthData.map(d => d.month), scaleType: 'band' }]}
-                    series={[{ data: userGrowthData.map(d => d.users), label: 'Users' }]}
-                    height={300}
-                  />
+                  {/* Replace with compatible chart library */}
+                  <Box sx={{ height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: '#f5f5f5' }}>
+                    <Typography variant="body2" color="text.secondary">User Growth Chart Placeholder</Typography>
+                  </Box>
                 </CardContent>
               </Card>
             </Box>
@@ -814,11 +814,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
               <Card>
                 <CardHeader title="Points Distribution" />
                 <CardContent>
-                  <BarChart
-                    xAxis={[{ data: pointsDistributionData.map(d => d.range), scaleType: 'band' }]}
-                    series={[{ data: pointsDistributionData.map(d => d.users), label: 'Users' }]}
-                    height={300}
-                  />
+                  {/* Replace with compatible chart library */}
+                  <Box sx={{ height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: '#f5f5f5' }}>
+                    <Typography variant="body2" color="text.secondary">Points Distribution Chart Placeholder</Typography>
+                  </Box>
                 </CardContent>
               </Card>
             </Box>
