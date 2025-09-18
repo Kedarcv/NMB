@@ -81,7 +81,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({
 }) => {
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [partners, setPartners] = useState<Partner[]>([]);
-  const [filteredPartners, setFilteredPartners] = useState<Partner[]>([]);
+  // Removed unused filteredPartners and setFilteredPartners
   const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('ALL');
@@ -93,10 +93,38 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({
   const [showFilters, setShowFilters] = useState(false);
   const [notification, setNotification] = useState({ open: false, message: '', severity: 'success' as any });
 
-  const [notification, setNotification] = useState({ open: false, message: '', severity: 'success' as any });
+  // Removed duplicate declaration of notification
 
   const backendService = UnifiedBackendService.getInstance();
   const mapRef = useRef<HTMLDivElement>(null);
+
+  // Filter partners based on search, category, distance, and active status
+  const filteredPartners = partners.filter(partner => {
+    // Filter by category
+    if (categoryFilter !== 'ALL' && partner.type !== categoryFilter) {
+      return false;
+    }
+    // Filter by active status
+    if (showOnlyActive && partner.status !== 'ACTIVE') {
+      return false;
+    }
+    // Filter by distance
+    if (partner.distance !== undefined && partner.distance > distanceFilter) {
+      return false;
+    }
+    // Filter by search query
+    if (searchQuery.trim() !== '') {
+      const query = searchQuery.trim().toLowerCase();
+      if (
+        !partner.name.toLowerCase().includes(query) &&
+        !partner.type.toLowerCase().includes(query) &&
+        !partner.location.toLowerCase().includes(query)
+      ) {
+        return false;
+      }
+    }
+    return true;
+  });
 
   const updatePartnerDistances = (location: UserLocation) => {
     const updatedPartners = partners.map(partner => {
@@ -168,40 +196,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({
     }
   }, [backendService, setLoading, setPartners, userLocation, updatePartnerDistances]);
 
-  const filterPartners = React.useCallback(() => {
-    let filtered = partners;
-
-    // Search filter
-    if (searchQuery) {
-      filtered = filtered.filter(partner =>
-        partner.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        partner.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        partner.location.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    // Category filter
-    if (categoryFilter !== 'ALL') {
-      filtered = filtered.filter(partner => partner.type === categoryFilter);
-    }
-
-    // Distance filter
-    if (userLocation) {
-      filtered = filtered.filter(partner => 
-        partner.distance && partner.distance <= distanceFilter
-      );
-    }
-
-    // Status filter
-    if (showOnlyActive) {
-      filtered = filtered.filter(partner => partner.status === 'ACTIVE');
-    }
-
-    // Sort by distance
-    filtered.sort((a, b) => (a.distance || 0) - (b.distance || 0));
-
-    setFilteredPartners(filtered);
-  }, [partners, searchQuery, categoryFilter, distanceFilter, showOnlyActive, userLocation, setFilteredPartners]);
+  // Removed unused filterPartners function
 
   const handlePartnerSelect = (partner: Partner) => {
     setSelectedPartner(partner);

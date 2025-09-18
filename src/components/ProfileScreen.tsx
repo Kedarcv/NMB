@@ -72,8 +72,6 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, onLogout }) => {
   });
   const [saveSuccess, setSaveSuccess] = useState(false);
 
-  const [saveSuccess, setSaveSuccess] = useState(false);
-
   const backendService = UnifiedBackendService.getInstance();
 
   const loadProfileData = React.useCallback(async () => {

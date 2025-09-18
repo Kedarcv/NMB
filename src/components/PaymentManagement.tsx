@@ -98,23 +98,6 @@ const PaymentManagement: React.FC<PaymentManagementProps> = ({ user }) => {
   const [showCvv, setShowCvv] = useState(false);
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
 
-  const [notification, setNotification] = useState({ open: false, message: '', severity: 'success' as any });
-
-  // Payment form state
-  const [paymentForm, setPaymentForm] = useState({
-    type: 'CREDIT_CARD',
-    cardNumber: '',
-    expiryMonth: '',
-    expiryYear: '',
-    cvv: '',
-    cardholderName: '',
-    isDefault: false
-  });
-
-  // Form validation
-  const [showCvv, setShowCvv] = useState(false);
-  const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
-
   const backendService = UnifiedBackendService.getInstance();
 
   const loadPaymentData = React.useCallback(async () => {

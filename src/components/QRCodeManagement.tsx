@@ -94,8 +94,6 @@ const QRCodeManagement: React.FC<QRCodeManagementProps> = ({ user }) => {
   const [scannedData, setScannedData] = useState('');
   const [scanResult, setScanResult] = useState<any>(null);
 
-  const [scanResult, setScanResult] = useState<any>(null);
-
   const backendService = UnifiedBackendService.getInstance();
 
   const loadQRData = React.useCallback(async () => {
