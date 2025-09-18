@@ -103,42 +103,7 @@ class UnifiedBackendService {
     console.log(`🌐 Java Backend URL: ${this.JAVA_BACKEND_URL}`);
     console.log(`🤖 Python AI Service URL: ${this.PYTHON_AI_URL}`);
     
-    // Only test backend connectivity if not a guest user
-    if (this.getCurrentUserId() !== 'guest') {
-      try {
-        await this.testBackendConnectivity();
-        console.log('✅ UnifiedBackendService initialized successfully');
-      } catch (error) {
-        console.error('❌ Error initializing UnifiedBackendService:', error);
-        throw error;
-      }
-    } else {
-      console.log('✅ UnifiedBackendService initialized for guest user (backend connectivity tests skipped).');
-    }
-  }
-
-  private async testBackendConnectivity(): Promise<void> {
-    try {
-      // Test Java backend - use public health endpoint
-      try {
-        const javaResponse = await this.javaBackendApi.get('/api/public/health');
-        console.log('✅ Java backend is accessible:', javaResponse.status);
-      } catch (javaError: any) {
-        console.warn('⚠️ Java backend connectivity issue:', javaError.message);
-      }
-      
-      // Test Python AI service
-      try {
-        const pythonResponse = await this.pythonAiApi.get('/health');
-        console.log('✅ Python AI service is accessible:', pythonResponse.status);
-      } catch (pythonError: any) {
-        console.warn('⚠️ Python AI service connectivity issue:', pythonError.message);
-      }
-      
-    } catch (error) {
-      console.warn('⚠️ Some backend services may not be accessible:', error);
-      // Don't throw error, just log warning - app can still work with fallbacks
-    }
+    console.log('✅ UnifiedBackendService initialized successfully (backend connectivity tests skipped for demo).');
   }
 
   public async login(email: string, password: string): Promise<LoginResult> {
