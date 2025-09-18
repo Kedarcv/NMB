@@ -75,7 +75,14 @@ function AppContent() {
   const [showSplash, setShowSplash] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [skippedLogin, setSkippedLogin] = useState(false);
   const [backendService] = useState(() => UnifiedBackendService.getInstance());
+
+  const handleSkipLogin = () => {
+    setSkippedLogin(true);
+    // Optionally, create a dummy user or set a flag for guest mode
+    // For now, we'll just proceed to the main layout
+  };
 
   useEffect(() => {
     // Show splash screen for 5 seconds
@@ -152,17 +159,17 @@ function AppContent() {
   }
 
   // If no user is logged in, show login screen
-  if (!user) {
-    return <LoginScreen />;
+  if (!user && !skippedLogin) {
+    return <LoginScreen onSkipLogin={handleSkipLogin} />;
   }
 
-  // If user is logged in, show main app
+  // If user is logged in or login is skipped, show main app
   return (
     <Router>
       <Routes>
         <Route 
           path="/*" 
-          element={<MainLayout user={user} />}
+          element={<MainLayout user={user || { id: 'guest', email: 'guest@example.com', firstName: 'Guest', lastName: 'User', role: 'USER', isActive: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }} />}
         />
       </Routes>
     </Router>

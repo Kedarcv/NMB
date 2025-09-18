@@ -23,7 +23,11 @@ import UnifiedBackendService from '../services/UnifiedBackendService';
 import { useAuth } from '../contexts/AuthContext';
 import xplugLogo from '../xplug_logo.png';
 
-const LoginScreen: React.FC = () => {
+interface LoginScreenProps {
+  onSkipLogin: () => void;
+}
+
+const LoginScreen: React.FC<LoginScreenProps> = ({ onSkipLogin }) => {
   const { signIn } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -206,6 +210,28 @@ const LoginScreen: React.FC = () => {
                 }}
               >
                 {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Login'}
+              </Button>
+              <Button
+                type="button"
+                fullWidth
+                variant="outlined"
+                size="large"
+                onClick={onSkipLogin}
+                sx={{
+                  mt: 2,
+                  py: 1.5,
+                  fontSize: '1.1rem',
+                  fontWeight: 'bold',
+                  borderRadius: 2,
+                  borderColor: '#1976D2',
+                  color: '#1976D2',
+                  '&:hover': {
+                    borderColor: '#1565C0',
+                    backgroundColor: 'rgba(25, 118, 210, 0.04)',
+                  },
+                }}
+              >
+                Skip Login
               </Button>
             </Box>
           </CardContent>
