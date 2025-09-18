@@ -115,7 +115,7 @@ const QRCodeManagement: React.FC<QRCodeManagementProps> = ({ user }) => {
 
   const handleGenerateQR = async () => {
     if (!qrForm.data.trim()) {
-      setError('QR code data is required');
+      showNotification('QR code data is required', 'error');
       return;
     }
 
@@ -142,7 +142,7 @@ const QRCodeManagement: React.FC<QRCodeManagementProps> = ({ user }) => {
 
   const handleScanQR = async () => {
     if (!scannedData.trim()) {
-      setError('Please scan a QR code first');
+      showNotification('Please scan a QR code first', 'error');
       return;
     }
 
@@ -179,7 +179,6 @@ const QRCodeManagement: React.FC<QRCodeManagementProps> = ({ user }) => {
       description: '',
       expiresIn: '24'
     });
-    setError(null);
   };
 
   const showNotification = (message: string, severity: 'success' | 'error' | 'warning' | 'info' = 'success') => {

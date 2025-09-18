@@ -235,7 +235,6 @@ const MapScreen: React.FC<MapScreenProps> = ({ user }) => {
     if (!selectedLocation) return;
 
     try {
-      setIsCheckingIn(true);
       
       await new Promise(resolve => setTimeout(resolve, 2000));
       
@@ -252,7 +251,6 @@ const MapScreen: React.FC<MapScreenProps> = ({ user }) => {
     } catch (error) {
       console.error('Check-in failed:', error);
     } finally {
-      setIsCheckingIn(false);
     }
   };
 
