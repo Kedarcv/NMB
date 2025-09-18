@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Card,
@@ -18,7 +18,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
   IconButton,
   Chip,
   Dialog,
@@ -42,32 +41,18 @@ import {
   Add as AddIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
-  Visibility as ViewIcon,
-  Send as SendIcon,
-  QrCode as QrCodeIcon,
-  Payment as PaymentIcon,
-  TrendingUp as TrendingUpIcon,
-  Star as StarIcon,
-  Email as EmailIcon,
-  Message as MessageIcon,
-  Assessment as AssessmentIcon,
-  MonetizationOn as MonetizationOnIcon,
-  Group as GroupIcon,
-  Campaign as CampaignIcon,
   Dashboard as DashboardIcon,
   People as PeopleIcon,
   Business as BusinessIcon,
   Analytics as AnalyticsIcon,
   LocalOffer as OfferIcon,
   Quiz as QuizIcon,
-  Notifications as NotificationIcon,
   Settings as SettingsIcon,
   Refresh as RefreshIcon,
   AutoAwesome as AutoAwesomeIcon,
   Save as SaveIcon,
   Close as CloseIcon
 } from '@mui/icons-material';
-// import { LineChart, BarChart, PieChart } from '@mui/x-charts';
 // TODO: Replace with a compatible chart library (e.g., recharts, chart.js)
 import UnifiedBackendService, { User } from '../services/UnifiedBackendService';
 
@@ -138,8 +123,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
   const [partners, setPartners] = useState<any[]>([]);
   const [quizzes, setQuizzes] = useState<any[]>([]);
   const [promotions, setPromotions] = useState<any[]>([]);
-  const [analytics, setAnalytics] = useState<any>(null);
-
   // Form states
   const [userDialogOpen, setUserDialogOpen] = useState(false);
   const [partnerDialogOpen, setPartnerDialogOpen] = useState(false);
@@ -183,18 +166,12 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
 
   const backendService = UnifiedBackendService.getInstance();
 
-  useEffect(() => {
-    loadDashboardData();
-  }, []);
-
-  const loadDashboardData = async () => {
+  const loadDashboardData = useCallback(async () => {
     try {
       setLoading(true);
-      
       // Load overview data
       const overview = await backendService.getAdminOverview();
       setOverviewData(overview);
-      
       // Load other data
       const [usersData, partnersData, quizzesData, promotionsData] = await Promise.all([
         backendService.getAdminUsers(),
@@ -202,19 +179,21 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
         backendService.getAdminQuizzes(),
         backendService.getAdminPromotions()
       ]);
-      
       setUsers(usersData || []);
       setPartners(partnersData || []);
       setQuizzes(quizzesData || []);
       setPromotions(promotionsData || []);
-      
     } catch (error) {
       console.error('Error loading dashboard data:', error);
       showNotification('Failed to load dashboard data', 'error');
     } finally {
       setLoading(false);
     }
-  };
+  }, [backendService]);
+
+  useEffect(() => {
+    loadDashboardData();
+  }, [loadDashboardData]);
 
   const showNotification = (message: string, severity: 'success' | 'error' | 'warning' | 'info' = 'success') => {
     setNotification({ open: true, message, severity });
@@ -459,24 +438,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user }) => {
       </Box>
     );
   }
-
-  // Chart data
-  const userGrowthData = [
-    { month: 'Jan', users: 120 },
-    { month: 'Feb', users: 150 },
-    { month: 'Mar', users: 180 },
-    { month: 'Apr', users: 220 },
-    { month: 'May', users: 280 },
-    { month: 'Jun', users: 350 }
-  ];
-
-  const pointsDistributionData = [
-    { range: '0-100', users: 45 },
-    { range: '101-500', users: 120 },
-    { range: '501-1000', users: 85 },
-    { range: '1001-2000', users: 60 },
-    { range: '2000+', users: 30 }
-  ];
 
   return (
     <Grid container spacing={3} sx={{ py: 3 }}>
