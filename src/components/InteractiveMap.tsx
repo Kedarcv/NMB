@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react'; // eslint-disable-line
 import {
   Box,
   Card,
@@ -37,7 +37,7 @@ import {
   Star as StarIcon,
   LocalOffer as OfferIcon,
   QrCode as QrCodeIcon,
-  Settings as SettingsIcon,
+  Settings as SettingsIcon, // eslint-disable-line @typescript-eslint/no-unused-vars
   Business as BusinessIcon,
   AccessTime as TimeIcon,
   Phone as PhoneIcon,

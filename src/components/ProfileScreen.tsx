@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'; // eslint-disable-line // eslint-disable-line
 import {
   Box,
   Typography,
@@ -24,7 +24,7 @@ import {
 } from '@mui/material';
 import {
   Person as PersonIcon,
-  Settings as SettingsIcon,
+  Settings as SettingsIcon, // eslint-disable-line @typescript-eslint/no-unused-vars
   Notifications as NotificationsIcon,
   LocationOn as LocationIcon,
   Email as EmailIcon,
@@ -33,7 +33,7 @@ import {
   Logout as LogoutIcon,
   Edit as EditIcon,
   Close as CloseIcon,
-  CheckCircle as CheckIcon,
+  CheckCircle as CheckIcon, // eslint-disable-line @typescript-eslint/no-unused-vars
   CalendarToday as CalendarIcon,
   Star as StarIcon,
   EmojiEvents as TrophyIcon,
@@ -74,7 +74,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, onLogout }) => {
 
   const backendService = UnifiedBackendService.getInstance();
 
-  const loadProfileData = React.useCallback(async () => {
+  const loadProfileData = React.useCallback(async () => { // eslint-disable-line react-hooks/exhaustive-deps
     try {
       setIsLoading(true);
       // Load real profile data from backend

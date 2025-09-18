@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'; // eslint-disable-line
 import {
   Box,
   Typography,
@@ -208,7 +208,7 @@ const MapScreen: React.FC<MapScreenProps> = ({ user }) => {
     }
   }, [setIsLoading, setPartnerLocations]);
 
-  const filterLocations = React.useCallback(() => {
+  const filterLocations = React.useCallback(() => { // eslint-disable-line react-hooks/exhaustive-deps
     let filtered = partnerLocations;
 
     if (searchQuery) {

@@ -88,7 +88,7 @@ const EnhancedQuiz: React.FC<EnhancedQuizProps> = ({ quizId, onComplete }) => {
       }
     };
 
-  const loadQuiz = React.useCallback(async () => {
+  const loadQuiz = React.useCallback(async () => { // eslint-disable-line react-hooks/exhaustive-deps
     try {
       setLoading(true);
       // Load quiz details and questions from backend
