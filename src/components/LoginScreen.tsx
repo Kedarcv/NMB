@@ -8,7 +8,6 @@ import {
   Typography,
   Alert,
   Container,
-  Paper,
   IconButton,
   InputAdornment,
   CircularProgress,
@@ -20,7 +19,7 @@ import {
   VisibilityOff as VisibilityOffIcon,
   Loyalty as LoyaltyIcon,
 } from '@mui/icons-material';
-import UnifiedBackendService, { LoginResult } from '../services/UnifiedBackendService';
+import UnifiedBackendService from '../services/UnifiedBackendService';
 import { useAuth } from '../contexts/AuthContext';
 import xplugLogo from '../xplug_logo.png';
 
@@ -71,19 +70,6 @@ const LoginScreen: React.FC = () => {
     } catch (error) {
       setIsErrorMessage('An unexpected error occurred');
       console.error('Login error:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleResetData = async () => {
-    setIsLoading(true);
-    try {
-      await backendService.resetData();
-      setIsErrorMessage('');
-      alert('Data reset successfully! Default users created.');
-    } catch (error) {
-      setIsErrorMessage('Failed to reset data');
     } finally {
       setIsLoading(false);
     }

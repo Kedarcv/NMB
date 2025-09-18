@@ -9,7 +9,6 @@ import {
   EmojiEvents as GamificationIcon,
 } from '@mui/icons-material';
 import { AdminPanelSettings as AdminIcon } from '@mui/icons-material';
-import HomeScreen from './HomeScreen';
 import MapScreen from './MapScreen';
 import InsightsScreen from './InsightsScreen';
 import ProfileScreen from './ProfileScreen';

@@ -4,7 +4,6 @@ import {
   Typography,
   Card,
   CardContent,
-  Grid,
   Button,
   Avatar,
   List,
@@ -12,7 +11,6 @@ import {
   ListItemText,
   ListItemIcon,
   Container,
-  Paper,
   Switch,
   Divider,
   IconButton,
@@ -22,7 +20,6 @@ import {
   DialogActions,
   TextField,
   Alert,
-  Chip,
   LinearProgress,
 } from '@mui/material';
 import {
@@ -75,18 +72,15 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, onLogout }) => {
   });
   const [saveSuccess, setSaveSuccess] = useState(false);
 
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
   const backendService = UnifiedBackendService.getInstance();
 
-  useEffect(() => {
-    loadProfileData();
-  }, []);
-
-  const loadProfileData = async () => {
+  const loadProfileData = React.useCallback(async () => {
     try {
       setIsLoading(true);
       // Load real profile data from backend
       const points = await backendService.getLoyaltyPoints(user.id);
-      const transactions = await backendService.getUserTransactions(user.id);
       
       // Calculate level and progress based on real data
       const totalPoints = points?.pointsBalance || 0;
@@ -126,7 +120,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, onLogout }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [backendService, user.id, user.createdAt, setProfileData, setIsLoading]);
 
   const handleSaveProfile = async () => {
     try {

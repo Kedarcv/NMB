@@ -1,4 +1,4 @@
-import { supabase, TABLES, Database } from '../config/supabase';
+import { supabase, TABLES } from '../config/supabase';
 import { User, LoyaltyPoints, Transaction } from './UnifiedBackendService';
 
 export interface SupabaseAuthResult {

@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box,
-  Card,
-  CardContent,
   Typography,
   Button,
   TextField,
@@ -10,7 +8,6 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Grid,
   Chip,
   IconButton,
   Dialog,
@@ -23,13 +20,9 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
-  ListItemSecondaryAction,
   Divider,
-  Switch,
-  FormControlLabel,
   Stack,
   Avatar,
-  Badge,
   Paper,
   LinearProgress,
   Tabs,
@@ -42,7 +35,6 @@ import {
   QrCodeScanner as QrCodeScannerIcon,
   History as HistoryIcon,
   Share as ShareIcon,
-  Download as DownloadIcon,
   Delete as DeleteIcon,
   CheckCircle as CheckCircleIcon,
   Warning as WarningIcon,
@@ -87,7 +79,6 @@ const QRCodeManagement: React.FC<QRCodeManagementProps> = ({ user }) => {
   const [showGenerateDialog, setShowGenerateDialog] = useState(false);
   const [showScanDialog, setShowScanDialog] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [notification, setNotification] = useState({ open: false, message: '', severity: 'success' as any });
 
   // QR Generation form state
@@ -103,13 +94,11 @@ const QRCodeManagement: React.FC<QRCodeManagementProps> = ({ user }) => {
   const [scannedData, setScannedData] = useState('');
   const [scanResult, setScanResult] = useState<any>(null);
 
+  const [scanResult, setScanResult] = useState<any>(null);
+
   const backendService = UnifiedBackendService.getInstance();
 
-  useEffect(() => {
-    loadQRData();
-  }, []);
-
-  const loadQRData = async () => {
+  const loadQRData = React.useCallback(async () => {
     try {
       setLoading(true);
       const [codes, history] = await Promise.all([
@@ -120,11 +109,11 @@ const QRCodeManagement: React.FC<QRCodeManagementProps> = ({ user }) => {
       setQrHistory(history || []);
     } catch (error) {
       console.error('Error loading QR data:', error);
-      setError('Failed to load QR code information');
+      // setError('Failed to load QR code information'); // Removed setError
     } finally {
       setLoading(false);
     }
-  };
+  }, [backendService, setLoading, setQrCodes, setQrHistory]);
 
   const handleGenerateQR = async () => {
     if (!qrForm.data.trim()) {
@@ -197,23 +186,6 @@ const QRCodeManagement: React.FC<QRCodeManagementProps> = ({ user }) => {
 
   const showNotification = (message: string, severity: 'success' | 'error' | 'warning' | 'info' = 'success') => {
     setNotification({ open: true, message, severity });
-  };
-
-  const getQRTypeIcon = (type: string) => {
-    switch (type) {
-      case 'POINTS':
-        return <QrCodeIcon color="primary" />;
-      case 'CHECKIN':
-        return <QrCodeIcon color="secondary" />;
-      case 'PROMOTION':
-        return <QrCodeIcon color="success" />;
-      case 'REFERRAL':
-        return <QrCodeIcon color="warning" />;
-      case 'CUSTOM':
-        return <QrCodeIcon color="info" />;
-      default:
-        return <QrCodeIcon />;
-    }
   };
 
   const getQRStatusColor = (status: string) => {

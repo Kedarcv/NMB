@@ -13,13 +13,8 @@ import {
   Chip,
   LinearProgress,
   Alert,
-  Snackbar,
-  IconButton,
-  Tooltip,
   Paper,
   Stack,
-  Divider,
-  Badge,
   Avatar,
   Dialog,
   DialogTitle,
@@ -79,29 +74,7 @@ const EnhancedQuiz: React.FC<EnhancedQuizProps> = ({ quizId, onComplete }) => {
 
   const backendService = UnifiedBackendService.getInstance();
 
-  useEffect(() => {
-    if (quizId) {
-      loadQuiz();
-    }
-  }, [quizId]);
-
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (isStarted && timeLeft > 0 && !isCompleted) {
-      timer = setTimeout(() => {
-        setTimeLeft(prev => {
-          if (prev <= 1) {
-            handleQuizComplete();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-    return () => clearTimeout(timer);
-  }, [isStarted, timeLeft, isCompleted]);
-
-  const loadQuiz = async () => {
+  const loadQuiz = React.useCallback(async () => {
     try {
       setLoading(true);
       // Load quiz details and questions from backend
@@ -117,38 +90,9 @@ const EnhancedQuiz: React.FC<EnhancedQuizProps> = ({ quizId, onComplete }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [quizId, backendService]);
 
-  const startQuiz = () => {
-    setIsStarted(true);
-    setTimeLeft(quiz!.timeLimitMinutes * 60);
-  };
-
-  const handleAnswerSelect = (questionId: string, answer: string) => {
-    setSelectedAnswers(prev => ({
-      ...prev,
-      [questionId]: answer
-    }));
-  };
-
-  const handleNextQuestion = () => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
-    }
-  };
-
-  const handlePreviousQuestion = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(prev => prev - 1);
-    }
-  };
-
-  const handleQuizComplete = () => {
-    setIsCompleted(true);
-    calculateScore();
-  };
-
-  const calculateScore = () => {
+  const calculateScore = React.useCallback(() => {
     let correctAnswers = 0;
     let totalPoints = 0;
 
@@ -167,7 +111,12 @@ const EnhancedQuiz: React.FC<EnhancedQuizProps> = ({ quizId, onComplete }) => {
     if (onComplete) {
       onComplete(finalScore, totalPoints);
     }
-  };
+  }, [questions, selectedAnswers, setScore, setPointsEarned, onComplete]);
+
+  const handleQuizComplete = React.useCallback(() => {
+    setIsCompleted(true);
+    calculateScore();
+  }, [calculateScore]);
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);

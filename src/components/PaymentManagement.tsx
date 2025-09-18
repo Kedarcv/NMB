@@ -10,7 +10,6 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Grid,
   Chip,
   IconButton,
   Dialog,
@@ -29,7 +28,6 @@ import {
   FormControlLabel,
   Stack,
   Avatar,
-  Badge,
   Paper,
   LinearProgress
 } from '@mui/material';
@@ -40,11 +38,8 @@ import {
   CreditCard as CreditCardIcon,
   AccountBalance as BankIcon,
   Payment as PaymentIcon,
-  Security as SecurityIcon,
   Star as StarIcon,
   CheckCircle as CheckCircleIcon,
-  Warning as WarningIcon,
-  Info as InfoIcon,
   Lock as LockIcon,
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon
@@ -86,7 +81,23 @@ const PaymentManagement: React.FC<PaymentManagementProps> = ({ user }) => {
   const [showAddPaymentDialog, setShowAddPaymentDialog] = useState(false);
   const [showSubscribeDialog, setShowSubscribeDialog] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [notification, setNotification] = useState({ open: false, message: '', severity: 'success' as any });
+
+  // Payment form state
+  const [paymentForm, setPaymentForm] = useState({
+    type: 'CREDIT_CARD',
+    cardNumber: '',
+    expiryMonth: '',
+    expiryYear: '',
+    cvv: '',
+    cardholderName: '',
+    isDefault: false
+  });
+
+  // Form validation
+  const [showCvv, setShowCvv] = useState(false);
+  const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
+
   const [notification, setNotification] = useState({ open: false, message: '', severity: 'success' as any });
 
   // Payment form state
@@ -106,11 +117,7 @@ const PaymentManagement: React.FC<PaymentManagementProps> = ({ user }) => {
 
   const backendService = UnifiedBackendService.getInstance();
 
-  useEffect(() => {
-    loadPaymentData();
-  }, []);
-
-  const loadPaymentData = async () => {
+  const loadPaymentData = React.useCallback(async () => {
     try {
       setLoading(true);
       const [methods, plans] = await Promise.all([
@@ -121,11 +128,11 @@ const PaymentManagement: React.FC<PaymentManagementProps> = ({ user }) => {
       setSubscriptionPlans(plans || []);
     } catch (error) {
       console.error('Error loading payment data:', error);
-      setError('Failed to load payment information');
+      // setError('Failed to load payment information'); // Removed setError
     } finally {
       setLoading(false);
     }
-  };
+  }, [backendService, setLoading, setPaymentMethods, setSubscriptionPlans]);
 
   const handleAddPaymentMethod = async () => {
     // Validate form

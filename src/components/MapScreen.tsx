@@ -6,10 +6,6 @@ import {
   CardContent,
   Button,
   Container,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
   Avatar,
   IconButton,
   Dialog,
@@ -36,8 +32,6 @@ import {
   LocalPharmacy as PharmacyIcon,
   LocalGasStation as GasIcon,
   AccountBalance as BankIcon,
-  LocalHospital as HospitalIcon,
-  Directions as DirectionsIcon,
   Phone as PhoneIcon,
   LocalOffer as OfferIcon,
   EmojiEvents as TrophyIcon,
@@ -78,7 +72,6 @@ const MapScreen: React.FC<MapScreenProps> = ({ user }) => {
   const [selectedLocation, setSelectedLocation] = useState<PartnerLocation | null>(null);
   const [showLocationDialog, setShowLocationDialog] = useState(false);
   const [showCheckInDialog, setShowCheckInDialog] = useState(false);
-  const [isCheckingIn, setIsCheckingIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   // Zimbabwean business partners
@@ -203,15 +196,7 @@ const MapScreen: React.FC<MapScreenProps> = ({ user }) => {
     { value: 'BANKING', label: 'Banking', icon: <BankIcon />, color: '#607D8B' },
   ];
 
-  useEffect(() => {
-    loadMapData();
-  }, []);
-
-  useEffect(() => {
-    filterLocations();
-  }, [searchQuery, selectedCategory, partnerLocations]);
-
-  const loadMapData = async () => {
+  const loadMapData = React.useCallback(async () => {
     try {
       setIsLoading(true);
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -221,9 +206,9 @@ const MapScreen: React.FC<MapScreenProps> = ({ user }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [setIsLoading, setPartnerLocations]);
 
-  const filterLocations = () => {
+  const filterLocations = React.useCallback(() => {
     let filtered = partnerLocations;
 
     if (searchQuery) {
@@ -239,7 +224,7 @@ const MapScreen: React.FC<MapScreenProps> = ({ user }) => {
     }
 
     setFilteredLocations(filtered);
-  };
+  }, [partnerLocations, searchQuery, selectedCategory, setFilteredLocations]);
 
   const handleLocationClick = (location: PartnerLocation) => {
     setSelectedLocation(location);

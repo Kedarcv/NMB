@@ -19,11 +19,8 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  Alert,
   Skeleton,
-  Divider,
   Paper,
-  Fade,
   Slide,
   Grow,
   Zoom,
@@ -82,11 +79,7 @@ const InsightsScreen: React.FC<InsightsScreenProps> = ({ user }) => {
   const [isAnalyzingSentiment, setIsAnalyzingSentiment] = useState(false);
   const [showSentimentDialog, setShowSentimentDialog] = useState(false);
 
-  useEffect(() => {
-    loadInsights();
-  }, []);
-
-  const loadInsights = async () => {
+  const loadInsights = React.useCallback(async () => {
     try {
       setIsLoading(true);
       
@@ -130,7 +123,7 @@ const InsightsScreen: React.FC<InsightsScreenProps> = ({ user }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [aiService, user.id, setRecommendations, setPredictiveInsights, setBehaviorPatterns, setInsightMetrics, setIsLoading]);
 
   const handleInsightClick = (insight: PredictiveInsight) => {
     setSelectedInsight(insight);

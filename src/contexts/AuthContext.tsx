@@ -60,7 +60,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     );
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [supabaseService]);
 
   const signIn = async (email: string, password: string) => {
     try {

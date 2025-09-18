@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Box, CircularProgress, Typography } from '@mui/material';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import LoginScreen from './components/LoginScreen';
-import UnifiedBackendService, { User } from './services/UnifiedBackendService';
+import UnifiedBackendService from './services/UnifiedBackendService';
 import SplashScreen from './components/SplashScreen';
 import MainLayout from './components/MainLayout';
 import OnboardingScreen from './components/OnboardingScreen';
@@ -71,7 +71,7 @@ const theme = createTheme({
 });
 
 function AppContent() {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
   const [showSplash, setShowSplash] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [isLoading, setIsLoading] = useState(false);

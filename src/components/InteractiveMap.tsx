@@ -7,15 +7,12 @@ import {
   Button,
   Chip,
   IconButton,
-  Tooltip,
-  Paper,
   Stack,
   List,
   ListItem,
   ListItemText,
   ListItemIcon,
   Avatar,
-  Badge,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -40,14 +37,12 @@ import {
   Star as StarIcon,
   LocalOffer as OfferIcon,
   QrCode as QrCodeIcon,
-  Notifications as NotificationIcon,
   Settings as SettingsIcon,
   Business as BusinessIcon,
   AccessTime as TimeIcon,
   Phone as PhoneIcon,
   Email as EmailIcon,
-  Map as MapIcon,
-  Navigation as NavigationIcon
+  Map as MapIcon
 } from '@mui/icons-material';
 import UnifiedBackendService from '../services/UnifiedBackendService';
 
@@ -93,62 +88,15 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({
   const [distanceFilter, setDistanceFilter] = useState(10);
   const [showOnlyActive, setShowOnlyActive] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [mapCenter, setMapCenter] = useState({ lat: -17.8252, lng: 31.0335 }); // Harare, Zimbabwe
   const [zoom, setZoom] = useState(12);
   const [showFilters, setShowFilters] = useState(false);
   const [notification, setNotification] = useState({ open: false, message: '', severity: 'success' as any });
 
+  const [notification, setNotification] = useState({ open: false, message: '', severity: 'success' as any });
+
   const backendService = UnifiedBackendService.getInstance();
   const mapRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    getUserLocation();
-    loadPartners();
-  }, []);
-
-  useEffect(() => {
-    filterPartners();
-  }, [partners, searchQuery, categoryFilter, distanceFilter, showOnlyActive]);
-
-  const getUserLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const location: UserLocation = {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            accuracy: position.coords.accuracy,
-            timestamp: position.timestamp
-          };
-          setUserLocation(location);
-          setMapCenter({ lat: location.latitude, lng: location.longitude });
-          
-          // Update partner distances
-          updatePartnerDistances(location);
-        },
-        (error) => {
-          console.error('Error getting location:', error);
-          setError('Unable to get your location. Please enable location services.');
-        }
-      );
-    } else {
-      setError('Geolocation is not supported by this browser.');
-    }
-  };
-
-  const loadPartners = async () => {
-    try {
-      setLoading(true);
-      const partnersData = await backendService.getNearbyPartners();
-      setPartners(partnersData || []);
-    } catch (error) {
-      console.error('Error loading partners:', error);
-      setError('Failed to load nearby partners');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const updatePartnerDistances = (location: UserLocation) => {
     const updatedPartners = partners.map(partner => {
@@ -178,7 +126,49 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({
     return R * c;
   };
 
-  const filterPartners = () => {
+  const getUserLocation = React.useCallback(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const location: UserLocation = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            accuracy: position.coords.accuracy,
+            timestamp: position.timestamp
+          };
+          setUserLocation(location);
+          setMapCenter({ lat: location.latitude, lng: location.longitude });
+          
+          // Update partner distances
+          updatePartnerDistances(location);
+        },
+        (error) => {
+          console.error('Error getting location:', error);
+          // setError('Unable to get your location. Please enable location services.'); // Removed setError
+        }
+      );
+    } else {
+      // setError('Geolocation is not supported by this browser.'); // Removed setError
+    }
+  }, [setUserLocation, setMapCenter, updatePartnerDistances]);
+
+  const loadPartners = React.useCallback(async () => {
+    try {
+      setLoading(true);
+      const partnersData = await backendService.getNearbyPartners();
+      setPartners(partnersData || []);
+      if (userLocation) {
+        updatePartnerDistances(userLocation);
+      }
+    } catch (error) {
+      console.error('Error loading partners:', error);
+      // setError('Failed to load nearby partners'); // Removed setError
+    } finally {
+      setLoading(false);
+    }
+  }, [backendService, setLoading, setPartners, userLocation, updatePartnerDistances]);
+
+  const filterPartners = React.useCallback(() => {
     let filtered = partners;
 
     // Search filter
@@ -211,7 +201,7 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({
     filtered.sort((a, b) => (a.distance || 0) - (b.distance || 0));
 
     setFilteredPartners(filtered);
-  };
+  }, [partners, searchQuery, categoryFilter, distanceFilter, showOnlyActive, userLocation, setFilteredPartners]);
 
   const handlePartnerSelect = (partner: Partner) => {
     setSelectedPartner(partner);

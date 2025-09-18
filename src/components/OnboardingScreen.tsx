@@ -15,7 +15,6 @@ import {
   Loyalty as LoyaltyIcon,
   Psychology as PsychologyIcon,
   LocationOn as LocationIcon,
-  Star as StarIcon,
   EmojiEvents as TrophyIcon,
   CheckCircle as CheckIcon,
 } from '@mui/icons-material';

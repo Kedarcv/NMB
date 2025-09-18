@@ -13,14 +13,8 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
   IconButton,
   Badge,
-  Paper,
-  Fade,
   Slide,
   Grow,
   Zoom,
@@ -101,20 +95,6 @@ const GamificationScreen: React.FC<GamificationScreenProps> = ({ user }) => {
   const [selectedQuiz, setSelectedQuiz] = useState<Quiz | null>(null);
   const [quizAnswer, setQuizAnswer] = useState<number | null>(null);
   
-  // Task verification dialogs
-  const [quizDialog, setQuizDialog] = useState<{
-    open: boolean;
-    taskId: string;
-    points: number;
-  }>({ open: false, taskId: '', points: 0 });
-  
-  const [locationVerificationDialog, setLocationVerificationDialog] = useState<{
-    open: boolean;
-    taskId: string;
-    points: number;
-  }>({ open: false, taskId: '', points: 0 });
-  
-  // Reward animation states
   const [showRewardAnimation, setShowRewardAnimation] = useState(false);
   const [rewardPoints, setRewardPoints] = useState(0);
   const [showGamificationAnimation, setShowGamificationAnimation] = useState(false);
@@ -130,26 +110,11 @@ const GamificationScreen: React.FC<GamificationScreenProps> = ({ user }) => {
     setShowNotification(true);
     setTimeout(() => setShowNotification(false), 3000);
   };
-
-  const showRewardAnimationMessage = (points: number) => {
-    setRewardPoints(points);
-    setShowRewardAnimation(true);
-    setTimeout(() => setShowRewardAnimation(false), 3000);
-  };
-
-  const showGamificationAnimationMessage = () => {
-    setShowGamificationAnimation(true);
-    setTimeout(() => setShowGamificationAnimation(false), 3000);
-  };
   const [isLoading, setIsLoading] = useState(true);
 
   const backendService = UnifiedBackendService.getInstance();
 
-  useEffect(() => {
-    loadGamificationData();
-  }, []);
-
-  const loadGamificationData = async () => {
+  const loadGamificationData = React.useCallback(async () => {
     try {
       setIsLoading(true);
       
@@ -333,7 +298,7 @@ const GamificationScreen: React.FC<GamificationScreenProps> = ({ user }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user.id, backendService, setUserStats, setDailyTasks, setAvailableQuizzes, setAchievements]);
 
   const handleQuizStart = (quiz: Quiz) => {
     setSelectedQuiz(quiz);
