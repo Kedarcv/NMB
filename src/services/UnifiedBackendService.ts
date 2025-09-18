@@ -295,6 +295,17 @@ class UnifiedBackendService {
 
 
   public async getLoyaltyPoints(userId: string): Promise<LoyaltyPoints | undefined> {
+    if (userId === 'guest') {
+      return {
+        id: 'guest-points',
+        userId: 'guest',
+        pointsBalance: 1500,
+        totalEarned: 2000,
+        totalRedeemed: 500,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+    }
     try {
       // Try Supabase first
       const supabaseService = SupabaseService.getInstance();
@@ -381,6 +392,21 @@ class UnifiedBackendService {
   // ==================== ADMIN METHODS ====================
   
   public async getAdminOverview(): Promise<any> {
+    if (this.getCurrentUserId() === 'guest') {
+      return {
+        totalUsers: 100,
+        activeUsers: 50,
+        totalPointsIssued: 10000,
+        totalPointsRedeemed: 2000,
+        activePoints: 8000,
+        totalPartners: 10,
+        activePartners: 8,
+        totalQuizzes: 5,
+        activeQuizzes: 3,
+        totalPromotions: 12,
+        activePromotions: 7
+      };
+    }
     try {
       const response = await this.javaBackendApi.get('/api/admin/overview');
       return response.data;
@@ -403,6 +429,12 @@ class UnifiedBackendService {
   }
   
   public async getAdminUsers(): Promise<any[]> {
+    if (this.getCurrentUserId() === 'guest') {
+      return [
+        { id: 'gu1', email: 'guest1@example.com', firstName: 'Guest', lastName: 'One', role: 'USER', isActive: true, createdAt: new Date().toISOString() },
+        { id: 'gu2', email: 'guest2@example.com', firstName: 'Guest', lastName: 'Two', role: 'USER', isActive: true, createdAt: new Date().toISOString() },
+      ];
+    }
     try {
       const response = await this.javaBackendApi.get('/api/admin/users');
       return response.data;
@@ -413,6 +445,12 @@ class UnifiedBackendService {
   }
   
   public async getAdminPartners(): Promise<any[]> {
+    if (this.getCurrentUserId() === 'guest') {
+      return [
+        { id: 'gp1', name: 'Guest Partner 1', type: 'RESTAURANT', status: 'ACTIVE' },
+        { id: 'gp2', name: 'Guest Partner 2', type: 'RETAIL', status: 'ACTIVE' },
+      ];
+    }
     try {
       const response = await this.javaBackendApi.get('/api/admin/partners');
       return response.data;
@@ -423,6 +461,12 @@ class UnifiedBackendService {
   }
   
   public async getAdminQuizzes(): Promise<any[]> {
+    if (this.getCurrentUserId() === 'guest') {
+      return [
+        { id: 'gq1', title: 'Guest Quiz 1', category: 'General', difficultyLevel: 'easy' },
+        { id: 'gq2', title: 'Guest Quiz 2', category: 'Science', difficultyLevel: 'medium' },
+      ];
+    }
     try {
       const response = await this.javaBackendApi.get('/api/admin/quizzes');
       return response.data;
@@ -433,6 +477,12 @@ class UnifiedBackendService {
   }
   
   public async getAdminPromotions(): Promise<any[]> {
+    if (this.getCurrentUserId() === 'guest') {
+      return [
+        { id: 'gpr1', name: 'Guest Promo 1', type: 'DISCOUNT', status: 'ACTIVE' },
+        { id: 'gpr2', name: 'Guest Promo 2', type: 'BONUS_POINTS', status: 'ACTIVE' },
+      ];
+    }
     try {
       const response = await this.javaBackendApi.get('/api/admin/promotions');
       return response.data;
@@ -443,6 +493,10 @@ class UnifiedBackendService {
   }
   
   public async regenerateQuizQuestions(quizId: string): Promise<void> {
+    if (this.getCurrentUserId() === 'guest') {
+      console.log('Guest: Regenerate quiz questions simulated.');
+      return;
+    }
     try {
       await this.javaBackendApi.post(`/api/admin/quizzes/${quizId}/regenerate`);
     } catch (error) {
@@ -454,6 +508,10 @@ class UnifiedBackendService {
   // ==================== ADMIN CRUD METHODS ====================
   
   public async createUser(userData: any): Promise<any> {
+    if (this.getCurrentUserId() === 'guest') {
+      console.log('Guest: Create user simulated.');
+      return { id: 'new-guest-user', ...userData };
+    }
     try {
       const response = await this.javaBackendApi.post('/api/admin/users', userData);
       return response.data;
@@ -464,6 +522,10 @@ class UnifiedBackendService {
   }
 
   public async updateUser(userId: string, userData: any): Promise<any> {
+    if (this.getCurrentUserId() === 'guest') {
+      console.log('Guest: Update user simulated.');
+      return { id: userId, ...userData };
+    }
     try {
       const response = await this.javaBackendApi.put(`/api/admin/users/${userId}`, userData);
       return response.data;
@@ -474,6 +536,10 @@ class UnifiedBackendService {
   }
 
   public async deleteUser(userId: string): Promise<void> {
+    if (this.getCurrentUserId() === 'guest') {
+      console.log('Guest: Delete user simulated.');
+      return;
+    }
     try {
       await this.javaBackendApi.delete(`/api/admin/users/${userId}`);
     } catch (error) {
@@ -483,6 +549,10 @@ class UnifiedBackendService {
   }
 
   public async createPartner(partnerData: any): Promise<any> {
+    if (this.getCurrentUserId() === 'guest') {
+      console.log('Guest: Create partner simulated.');
+      return { id: 'new-guest-partner', ...partnerData };
+    }
     try {
       const response = await this.javaBackendApi.post('/api/admin/partners', partnerData);
       return response.data;
@@ -493,6 +563,10 @@ class UnifiedBackendService {
   }
 
   public async updatePartner(partnerId: string, partnerData: any): Promise<any> {
+    if (this.getCurrentUserId() === 'guest') {
+      console.log('Guest: Update partner simulated.');
+      return { id: partnerId, ...partnerData };
+    }
     try {
       const response = await this.javaBackendApi.put(`/api/admin/partners/${partnerId}`, partnerData);
       return response.data;
@@ -503,6 +577,10 @@ class UnifiedBackendService {
   }
 
   public async deletePartner(partnerId: string): Promise<void> {
+    if (this.getCurrentUserId() === 'guest') {
+      console.log('Guest: Delete partner simulated.');
+      return;
+    }
     try {
       await this.javaBackendApi.delete(`/api/admin/partners/${partnerId}`);
     } catch (error) {
@@ -512,6 +590,10 @@ class UnifiedBackendService {
   }
 
   public async createQuiz(quizData: any): Promise<any> {
+    if (this.getCurrentUserId() === 'guest') {
+      console.log('Guest: Create quiz simulated.');
+      return { id: 'new-guest-quiz', ...quizData };
+    }
     try {
       const response = await this.javaBackendApi.post('/api/admin/quizzes', quizData);
       return response.data;
@@ -522,6 +604,10 @@ class UnifiedBackendService {
   }
 
   public async updateQuiz(quizId: string, quizData: any): Promise<any> {
+    if (this.getCurrentUserId() === 'guest') {
+      console.log('Guest: Update quiz simulated.');
+      return { id: quizId, ...quizData };
+    }
     try {
       const response = await this.javaBackendApi.put(`/api/admin/quizzes/${quizId}`, quizData);
       return response.data;
@@ -532,6 +618,10 @@ class UnifiedBackendService {
   }
 
   public async deleteQuiz(quizId: string): Promise<void> {
+    if (this.getCurrentUserId() === 'guest') {
+      console.log('Guest: Delete quiz simulated.');
+      return;
+    }
     try {
       await this.javaBackendApi.delete(`/api/admin/quizzes/${quizId}`);
     } catch (error) {
@@ -541,6 +631,10 @@ class UnifiedBackendService {
   }
 
   public async createPromotion(promotionData: any): Promise<any> {
+    if (this.getCurrentUserId() === 'guest') {
+      console.log('Guest: Create promotion simulated.');
+      return { id: 'new-guest-promotion', ...promotionData };
+    }
     try {
       const response = await this.javaBackendApi.post('/api/admin/promotions', promotionData);
       return response.data;
@@ -551,6 +645,10 @@ class UnifiedBackendService {
   }
 
   public async updatePromotion(promotionId: string, promotionData: any): Promise<any> {
+    if (this.getCurrentUserId() === 'guest') {
+      console.log('Guest: Update promotion simulated.');
+      return { id: promotionId, ...promotionData };
+    }
     try {
       const response = await this.javaBackendApi.put(`/api/admin/promotions/${promotionId}`, promotionData);
       return response.data;
@@ -561,6 +659,10 @@ class UnifiedBackendService {
   }
 
   public async deletePromotion(promotionId: string): Promise<void> {
+    if (this.getCurrentUserId() === 'guest') {
+      console.log('Guest: Delete promotion simulated.');
+      return;
+    }
     try {
       await this.javaBackendApi.delete(`/api/admin/promotions/${promotionId}`);
     } catch (error) {
@@ -572,6 +674,31 @@ class UnifiedBackendService {
   // ==================== QUIZ METHODS ====================
   
   public async generateQuizQuestions(category: string, difficulty: string, questionCount: number, partnerContext?: string): Promise<any[]> {
+    if (this.getCurrentUserId() === 'guest') {
+      console.log('Guest: Generate quiz questions simulated.');
+      return [
+        {
+          id: 'gq1',
+          questionText: 'Guest Question 1',
+          questionType: 'MULTIPLE_CHOICE',
+          options: 'Option A|Option B|Option C',
+          correctAnswer: 'Option A',
+          explanation: 'This is a dummy explanation.',
+          difficulty: 'easy',
+          points: 10,
+        },
+        {
+          id: 'gq2',
+          questionText: 'Guest Question 2',
+          questionType: 'TRUE_FALSE',
+          options: 'True|False',
+          correctAnswer: 'True',
+          explanation: 'Another dummy explanation.',
+          difficulty: 'medium',
+          points: 20,
+        },
+      ];
+    }
     try {
       const response = await this.javaBackendApi.post('/api/quiz/generate', {
         category,
@@ -588,6 +715,10 @@ class UnifiedBackendService {
   }
 
   public async submitQuizAnswers(questions: any[], answers: number[], timeTaken: number, category: string, difficulty: string): Promise<any> {
+    if (this.getCurrentUserId() === 'guest') {
+      console.log('Guest: Submit quiz answers simulated.');
+      return { success: true, score: 80, pointsEarned: 50 };
+    }
     try {
       const response = await this.javaBackendApi.post('/api/quiz/submit', {
         userId: this.getCurrentUserId(),
@@ -605,6 +736,9 @@ class UnifiedBackendService {
   }
 
   public async getQuizCategories(): Promise<string[]> {
+    if (this.getCurrentUserId() === 'guest') {
+      return ['General', 'Science', 'History', 'Technology'];
+    }
     try {
       const response = await this.javaBackendApi.get('/api/quiz/categories');
       return response.data.categories || [];
@@ -615,6 +749,9 @@ class UnifiedBackendService {
   }
 
   public async getQuizDifficultyLevels(): Promise<string[]> {
+    if (this.getCurrentUserId() === 'guest') {
+      return ['easy', 'medium', 'hard'];
+    }
     try {
       const response = await this.javaBackendApi.get('/api/quiz/difficulty-levels');
       return response.data.difficultyLevels || [];
@@ -625,6 +762,17 @@ class UnifiedBackendService {
   }
   
   public async getQuizById(quizId: string): Promise<any> {
+    if (this.getCurrentUserId() === 'guest') {
+      return {
+        id: quizId,
+        title: 'Guest Quiz Title',
+        description: 'This is a dummy quiz for guest users.',
+        category: 'General',
+        difficultyLevel: 'easy',
+        pointsReward: 100,
+        timeLimitMinutes: 5,
+      };
+    }
     try {
       const response = await this.javaBackendApi.get(`/api/quizzes/${quizId}`);
       return response.data;
@@ -635,6 +783,41 @@ class UnifiedBackendService {
   }
   
   public async getQuizQuestions(quizId: string): Promise<any[]> {
+    if (this.getCurrentUserId() === 'guest') {
+      const dummyQuestions = [
+        {
+          id: 'q1',
+          questionText: 'What is the capital of France?',
+          questionType: 'MULTIPLE_CHOICE',
+          options: 'Paris|London|Berlin|Madrid',
+          correctAnswer: 'Paris',
+          explanation: 'Paris is the capital and most populous city of France.',
+          difficulty: 'easy',
+          points: 10,
+        },
+        {
+          id: 'q2',
+          questionText: 'Which planet is known as the Red Planet?',
+          questionType: 'MULTIPLE_CHOICE',
+          options: 'Earth|Mars|Jupiter|Venus',
+          correctAnswer: 'Mars',
+          explanation: 'Mars is often referred to as the Red Planet due to its reddish appearance.',
+          difficulty: 'medium',
+          points: 20,
+        },
+        {
+          id: 'q3',
+          questionText: 'What is the largest ocean on Earth?',
+          questionType: 'MULTIPLE_CHOICE',
+          options: 'Atlantic|Indian|Arctic|Pacific',
+          correctAnswer: 'Pacific',
+          explanation: 'The Pacific Ocean is the largest and deepest of Earth\'s five oceanic divisions.',
+          difficulty: 'hard',
+          points: 30,
+        },
+      ];
+      return dummyQuestions;
+    }
     try {
       const response = await this.javaBackendApi.get(`/api/quizzes/${quizId}/questions`);
       return response.data;
@@ -649,6 +832,43 @@ class UnifiedBackendService {
   // ==================== LOCATION & PARTNER METHODS ====================
   
   public async getNearbyPartners(): Promise<any[]> {
+    if (this.getCurrentUserId() === 'guest') {
+      const dummyPartners = [
+        {
+          id: 'p1',
+          name: 'Guest Restaurant',
+          type: 'RESTAURANT',
+          location: 'Guest City',
+          status: 'ACTIVE',
+          commission: 0.1,
+          rating: 4.5,
+          contactEmail: 'guest@example.com',
+          contactPhone: '123-456-7890',
+          businessHours: '9 AM - 10 PM',
+          latitude: -17.8252,
+          longitude: 31.0335,
+          distance: 1.2,
+          currentPromotions: [{ title: 'Guest Discount' }],
+        },
+        {
+          id: 'p2',
+          name: 'Guest Shop',
+          type: 'RETAIL',
+          location: 'Guest City',
+          status: 'ACTIVE',
+          commission: 0.05,
+          rating: 4.0,
+          contactEmail: 'guest2@example.com',
+          contactPhone: '098-765-4321',
+          businessHours: '10 AM - 8 PM',
+          latitude: -17.8300,
+          longitude: 31.0400,
+          distance: 2.5,
+          currentPromotions: [{ title: 'Guest Offer' }],
+        },
+      ];
+      return dummyPartners;
+    }
     try {
       const response = await this.javaBackendApi.get('/api/partners/nearby');
       return response.data;
@@ -659,6 +879,9 @@ class UnifiedBackendService {
   }
   
   public async checkInToLocation(partnerId: string): Promise<any> {
+    if (this.getCurrentUserId() === 'guest') {
+      return { success: true, message: 'Guest check-in simulated.' };
+    }
     try {
       const response = await this.javaBackendApi.post(`/api/location/checkin/${partnerId}`);
       return response.data;
@@ -669,6 +892,9 @@ class UnifiedBackendService {
   }
 
   public async verifyLocation(latitude: number, longitude: number, partnerId: string, verificationMethod: string): Promise<any> {
+    if (this.getCurrentUserId() === 'guest') {
+      return { success: true, message: 'Guest location verification simulated.' };
+    }
     try {
       const response = await this.javaBackendApi.post('/api/quiz/location/verify', {
         userId: this.getCurrentUserId(),
@@ -689,6 +915,9 @@ class UnifiedBackendService {
   // ==================== AD WATCHING METHODS ====================
   
   public async watchAd(adId: string, adTitle: string): Promise<any> {
+    if (this.getCurrentUserId() === 'guest') {
+      return { success: true, message: 'Guest ad watch simulated.' };
+    }
     try {
       const response = await this.javaBackendApi.post('/api/quiz/ads/watch', {
         userId: this.getCurrentUserId(),
@@ -703,6 +932,9 @@ class UnifiedBackendService {
   }
 
   public async getAdProgress(): Promise<any> {
+    if (this.getCurrentUserId() === 'guest') {
+      return { watchedAds: 5, totalAds: 10, progress: 0.5 };
+    }
     try {
       const userId = this.getCurrentUserId();
       if (!userId) throw new Error('User not authenticated');
@@ -716,6 +948,13 @@ class UnifiedBackendService {
   }
 
   public async getAvailableAds(): Promise<any[]> {
+    if (this.getCurrentUserId() === 'guest') {
+      const dummyAds = [
+        { id: 'ad1', title: 'Guest Ad 1', description: 'Watch this ad for points!' },
+        { id: 'ad2', title: 'Guest Ad 2', description: 'Another exciting ad!' },
+      ];
+      return dummyAds;
+    }
     try {
       const response = await this.javaBackendApi.get('/api/quiz/ads/available');
       return response.data.ads || [];
@@ -726,6 +965,24 @@ class UnifiedBackendService {
   }
   
   public async getPartnerDetails(partnerId: string): Promise<any> {
+    if (this.getCurrentUserId() === 'guest') {
+      return {
+        id: partnerId,
+        name: 'Guest Partner',
+        type: 'GENERIC',
+        location: 'Guest Location',
+        status: 'ACTIVE',
+        commission: 0,
+        rating: 0,
+        contactEmail: '',
+        contactPhone: '',
+        businessHours: '',
+        latitude: 0,
+        longitude: 0,
+        distance: 0,
+        currentPromotions: [],
+      };
+    }
     try {
       const response = await this.javaBackendApi.get(`/api/partners/${partnerId}`);
       return response.data;
@@ -738,6 +995,30 @@ class UnifiedBackendService {
   // ==================== PAYMENT & SUBSCRIPTION METHODS ====================
   
   public async getPaymentMethods(): Promise<any[]> {
+    if (this.getCurrentUserId() === 'guest') {
+      return [
+        {
+          id: 'pm1',
+          type: 'CREDIT_CARD',
+          last4: '1111',
+          brand: 'Visa',
+          expiryMonth: 12,
+          expiryYear: 2025,
+          isDefault: true,
+          isActive: true,
+          createdAt: new Date().toISOString(),
+        },
+        {
+          id: 'pm2',
+          type: 'MOBILE_MONEY',
+          last4: '5555',
+          brand: 'EcoCash',
+          isDefault: false,
+          isActive: true,
+          createdAt: new Date().toISOString(),
+        },
+      ];
+    }
     try {
       const response = await this.javaBackendApi.get('/api/payments/methods');
       return response.data;
@@ -748,6 +1029,9 @@ class UnifiedBackendService {
   }
   
   public async addPaymentMethod(paymentData: any): Promise<any> {
+    if (this.getCurrentUserId() === 'guest') {
+      return { success: true, message: 'Guest add payment method simulated.' };
+    }
     try {
       const response = await this.javaBackendApi.post('/api/payments/methods', paymentData);
       return response.data;
@@ -758,6 +1042,32 @@ class UnifiedBackendService {
   }
   
   public async getSubscriptionPlans(): Promise<any[]> {
+    if (this.getCurrentUserId() === 'guest') {
+      return [
+        {
+          id: 'plan1',
+          name: 'Basic Plan',
+          description: 'Access to core features',
+          price: 9.99,
+          currency: 'USD',
+          interval: 'MONTHLY',
+          features: ['Feature A', 'Feature B'],
+          isPopular: false,
+          isActive: true,
+        },
+        {
+          id: 'plan2',
+          name: 'Premium Plan',
+          description: 'Unlock all features',
+          price: 19.99,
+          currency: 'USD',
+          interval: 'MONTHLY',
+          features: ['Feature A', 'Feature B', 'Feature C', 'Feature D'],
+          isPopular: true,
+          isActive: true,
+        },
+      ];
+    }
     try {
       const response = await this.javaBackendApi.get('/api/subscriptions/plans');
       return response.data;
@@ -768,6 +1078,9 @@ class UnifiedBackendService {
   }
   
   public async subscribeToPlan(planId: string, paymentMethodId: string): Promise<any> {
+    if (this.getCurrentUserId() === 'guest') {
+      return { success: true, message: 'Guest subscription simulated.' };
+    }
     try {
       const response = await this.javaBackendApi.post('/api/subscriptions/subscribe', {
         planId,
@@ -783,6 +1096,9 @@ class UnifiedBackendService {
   // ==================== QR CODE METHODS ====================
   
   public async generateQRCode(data: any): Promise<any> {
+    if (this.getCurrentUserId() === 'guest') {
+      return { success: true, message: 'Guest QR code generation simulated.' };
+    }
     try {
       const response = await this.javaBackendApi.post('/api/qr/generate', data);
       return response.data;
@@ -793,6 +1109,9 @@ class UnifiedBackendService {
   }
   
   public async scanQRCode(qrData: string): Promise<any> {
+    if (this.getCurrentUserId() === 'guest') {
+      return { success: true, message: 'Guest QR code scan simulated.', pointsEarned: 25 };
+    }
     try {
       const response = await this.javaBackendApi.post('/api/qr/scan', { qrData });
       return response.data;
@@ -803,6 +1122,30 @@ class UnifiedBackendService {
   }
   
   public async getQRCodeHistory(): Promise<any[]> {
+    if (this.getCurrentUserId() === 'guest') {
+      return [
+        {
+          id: 'qr1',
+          type: 'POINTS',
+          data: 'guest-points-qr',
+          pointsAmount: 50,
+          status: 'ACTIVE',
+          expiresAt: new Date(Date.now() + 3600 * 1000).toISOString(), // Expires in 1 hour
+          createdAt: new Date().toISOString(),
+          description: 'Guest points QR code',
+        },
+        {
+          id: 'qr2',
+          type: 'CHECKIN',
+          data: 'guest-checkin-qr',
+          status: 'USED',
+          usedAt: new Date().toISOString(),
+          usedBy: 'guest',
+          createdAt: new Date(Date.now() - 86400 * 1000).toISOString(), // Created yesterday
+          description: 'Guest check-in QR code',
+        },
+      ];
+    }
     try {
       const response = await this.javaBackendApi.get('/api/qr/history');
       return response.data;
