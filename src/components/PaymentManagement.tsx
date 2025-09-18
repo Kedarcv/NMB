@@ -115,7 +115,11 @@ const PaymentManagement: React.FC<PaymentManagementProps> = ({ user }) => {
     } finally {
       setLoading(false);
     }
-  }, [backendService, setLoading, setPaymentMethods, setSubscriptionPlans]);
+  }, [backendService]);
+
+  useEffect(() => {
+    loadPaymentData();
+  }, [loadPaymentData]);
 
   const handleAddPaymentMethod = async () => {
     // Validate form

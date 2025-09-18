@@ -99,19 +99,30 @@ const QRCodeManagement: React.FC<QRCodeManagementProps> = ({ user }) => {
   const loadQRData = React.useCallback(async () => {
     try {
       setLoading(true);
-      const [codes, history] = await Promise.all([
-        backendService.getQRCodeHistory(),
-        backendService.getQRCodeHistory()
-      ]);
+      const codes = await backendService.getQRCodeHistory();
       setQrCodes(codes || []);
-      setQrHistory(history || []);
+
+      // Create dummy history from the codes
+      const history: QRCodeHistory[] = (codes || []).map(code => ({
+        id: `${code.id}-history`,
+        qrCodeId: code.id,
+        action: code.status === 'USED' ? 'USED' : 'GENERATED',
+        timestamp: code.usedAt || code.createdAt,
+        details: `QR Code ${code.status.toLowerCase()}: ${code.description || code.data}`,
+        pointsEarned: code.status === 'USED' ? code.pointsAmount : undefined,
+      }));
+      setQrHistory(history);
+
     } catch (error) {
       console.error('Error loading QR data:', error);
-      // setError('Failed to load QR code information'); // Removed setError
     } finally {
       setLoading(false);
     }
-  }, [backendService, setLoading, setQrCodes, setQrHistory]);
+  }, [backendService]);
+
+  useEffect(() => {
+    loadQRData();
+  }, [loadQRData]);
 
   const handleGenerateQR = async () => {
     if (!qrForm.data.trim()) {

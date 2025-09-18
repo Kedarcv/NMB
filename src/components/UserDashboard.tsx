@@ -7,7 +7,6 @@ import {
   Chip,
   Snackbar,
   Alert,
-  // Removed duplicate icon imports
   Box,
   Card,
   CardContent,
@@ -23,11 +22,11 @@ import {
   Tabs,
   Tab,
 } from '@mui/material';
-  import {
-    Map as MapIcon,
-    Payment as PaymentIcon,
-    QrCode as QrCodeIcon,
-  } from '@mui/icons-material';
+import {
+  Map as MapIcon,
+  Payment as PaymentIcon,
+  QrCode as QrCodeIcon,
+} from '@mui/icons-material';
 import {
   Dashboard as DashboardIcon,
   Add as AddIcon,
@@ -41,7 +40,7 @@ import {
   Quiz as QuizIcon,
   Star as StarIcon
 } from '@mui/icons-material';
-// Removed unused UnifiedBackendService import
+import UnifiedBackendService, { Transaction } from '../services/UnifiedBackendService';
 import EnhancedQuiz from './EnhancedQuiz';
 import InteractiveMap from './InteractiveMap';
 import PaymentManagement from './PaymentManagement';
@@ -66,7 +65,7 @@ interface DashboardStats {
 
 interface RecentActivity {
   id: string;
-  type: 'QUIZ_COMPLETED' | 'POINTS_EARNED' | 'CHECKIN' | 'PROMOTION_ACTIVATED' | 'QR_SCANNED';
+  type: 'POINTS_EARNED' | 'POINTS_REDEEMED';
   title: string;
   description: string;
   points: number;
@@ -79,64 +78,51 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ user }) => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
   const [loading, setLoading] = useState(false);
-  // Removed unused 'error' state
   const [notification, setNotification] = useState({ open: false, message: '', severity: 'success' as any });
-
-    // Removed unused 'backendService' variable
 
   const loadDashboardData = useCallback(async () => {
     try {
       setLoading(true);
-      // Load user stats and recent activity
-      // This would typically come from backend endpoints
-      const mockStats: DashboardStats = {
-        totalPoints: user.points || 1250,
-        totalEarned: 2500,
-        totalSpent: 1250,
-        currentLevel: 'Silver',
-        nextLevelPoints: 2000,
-        pointsToNextLevel: 750,
-        totalQuizzes: 15,
-        quizzesCompleted: 12,
-        totalCheckins: 8,
-        activePromotions: 3
-      };
+      const backendService = UnifiedBackendService.getInstance();
+      const userId = user.id;
 
-      const mockActivity: RecentActivity[] = [
-        {
-          id: '1',
-          type: 'QUIZ_COMPLETED',
-          title: 'Quiz Completed',
-          description: 'Completed "Loyalty Basics" quiz',
-          points: 50,
-          timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-          icon: <QuizIcon color="primary" />
-        },
-        {
-          id: '2',
-          type: 'CHECKIN',
-          title: 'Location Check-in',
-          description: 'Checked in at ShopRite Harare',
-          points: 25,
-          timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-          icon: <LocationIcon color="success" />
-        },
-        {
-          id: '3',
-          type: 'PROMOTION_ACTIVATED',
-          title: 'Promotion Activated',
-          description: 'Activated "Double Points Weekend"',
-          points: 0,
-          timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-          icon: <StarIcon color="warning" />
-        }
-      ];
+      const [loyaltyPoints, transactions] = await Promise.all([
+        backendService.getLoyaltyPoints(userId),
+        backendService.getUserTransactions(userId),
+      ]);
 
-      setStats(mockStats);
-      setRecentActivity(mockActivity);
+      if (loyaltyPoints) {
+        const mockStats: DashboardStats = {
+          totalPoints: loyaltyPoints.pointsBalance,
+          totalEarned: loyaltyPoints.totalEarned,
+          totalSpent: loyaltyPoints.totalRedeemed,
+          currentLevel: 'Silver',
+          nextLevelPoints: 2000,
+          pointsToNextLevel: 2000 - loyaltyPoints.pointsBalance,
+          totalQuizzes: 15,
+          quizzesCompleted: 12,
+          totalCheckins: 8,
+          activePromotions: 3
+        };
+        setStats(mockStats);
+      }
+
+      const activityFromTransactions: RecentActivity[] = transactions.map((t: Transaction): RecentActivity => {
+        const isEarn = t.type === 'EARN';
+        return {
+          id: t.id,
+          type: isEarn ? 'POINTS_EARNED' : 'POINTS_REDEEMED',
+          title: isEarn ? 'Points Earned' : 'Points Redeemed',
+          description: t.reason,
+          points: t.points,
+          timestamp: t.timestamp,
+          icon: isEarn ? <StarIcon color="success" /> : <TrophyIcon color="warning" />,
+        };
+      });
+
+      setRecentActivity(activityFromTransactions);
     } catch (error) {
       console.error('Error loading dashboard data:', error);
-      // Error state removed, log to console only
     } finally {
       setLoading(false);
     }
@@ -454,7 +440,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ user }) => {
       )}
 
       {activeTab === 1 && (
-        <EnhancedQuiz />
+        <EnhancedQuiz quizId="gq1" />
       )}
 
       {activeTab === 2 && (

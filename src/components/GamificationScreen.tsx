@@ -138,7 +138,7 @@ const GamificationScreen: React.FC<GamificationScreenProps> = ({ user }) => {
         dailyTasksCompleted: Math.floor(Math.random() * 5) + 1,
       });
 
-      // Initialize daily tasks
+      // Initialize daily tasks (keeping mock data as service is not available)
       const tasks: DailyTask[] = [
         {
           id: '1',
@@ -188,57 +188,25 @@ const GamificationScreen: React.FC<GamificationScreenProps> = ({ user }) => {
       ];
       setDailyTasks(tasks);
 
-      // Initialize quizzes
-      const quizzes: Quiz[] = [
-        {
-          id: '1',
-          title: 'Loyalty Basics',
-          question: 'What is the main benefit of a loyalty program?',
-          options: [
-            'Free products',
-            'Earn points and rewards',
-            'Discounts only',
-            'Nothing special'
-          ],
-          correctAnswer: 1,
-          points: 25,
-          explanation: 'Loyalty programs help you earn points and rewards for your continued engagement.',
-          category: 'LOYALTY',
-        },
-        {
-          id: '2',
-          title: 'Smart Shopping',
-          question: 'How can you maximize your loyalty points?',
-          options: [
-            'Shop only during sales',
-            'Use multiple payment methods',
-            'Shop strategically and use bonus point offers',
-            'Buy everything at once'
-          ],
-          correctAnswer: 2,
-          points: 30,
-          explanation: 'Strategic shopping with bonus point offers maximizes your earning potential.',
-          category: 'SHOPPING',
-        },
-        {
-          id: '3',
-          title: 'Rewards Strategy',
-          question: 'When is the best time to redeem your points?',
-          options: [
-            'As soon as you have enough',
-            'During special redemption events',
-            'Never redeem them',
-            'Only on your birthday'
-          ],
-          correctAnswer: 1,
-          points: 35,
-          explanation: 'Special redemption events often offer better value for your points.',
-          category: 'REWARDS',
-        },
-      ];
-      setAvailableQuizzes(quizzes);
+      // Load quizzes from backend
+      const quizQuestions = await backendService.generateQuizQuestions('General', 'easy', 3);
+      const mappedQuizzes: Quiz[] = quizQuestions.map((q): Quiz => {
+        const options = q.options.split('|');
+        const correctIndex = options.findIndex(opt => opt === q.correctAnswer);
+        return {
+            id: q.id,
+            title: `Quiz: ${q.difficulty}`,
+            question: q.questionText,
+            options: options,
+            correctAnswer: correctIndex,
+            points: q.points,
+            explanation: q.explanation,
+            category: 'LOYALTY', // default
+        };
+      });
+      setAvailableQuizzes(mappedQuizzes);
 
-      // Initialize achievements
+      // Initialize achievements (keeping mock data as service is not available)
       const userAchievements: Achievement[] = [
         {
           id: '1',
@@ -298,7 +266,7 @@ const GamificationScreen: React.FC<GamificationScreenProps> = ({ user }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [user.id, backendService, setUserStats, setDailyTasks, setAvailableQuizzes, setAchievements]);
+  }, [user.id, backendService]);
 
   const handleQuizStart = (quiz: Quiz) => {
     setSelectedQuiz(quiz);

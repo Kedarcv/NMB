@@ -350,6 +350,16 @@ class UnifiedBackendService {
   }
 
   public async addLoyaltyPoints(userId: string, points: number, reason: string): Promise<AddPointsResult> {
+    if (userId === 'guest') {
+      console.log('Guest: Add loyalty points simulated.');
+      // We can simulate updating the balance, but for now, we just return success.
+      // In a real scenario, you might want to update a local guest object.
+      return {
+        success: true,
+        newBalance: 1500 + points, // Assuming base of 1500 from getLoyaltyPoints
+        message: 'Points added for guest successfully (simulated).',
+      };
+    }
     try {
       // Try Supabase first
       const supabaseService = SupabaseService.getInstance();

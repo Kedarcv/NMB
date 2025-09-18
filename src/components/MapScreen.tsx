@@ -74,118 +74,6 @@ const MapScreen: React.FC<MapScreenProps> = ({ user }) => {
   const [showCheckInDialog, setShowCheckInDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Zimbabwean business partners
-  const zimbabweanPartners: PartnerLocation[] = [
-    {
-      id: '1',
-      name: 'Nandos Harare',
-      category: 'RESTAURANT',
-      address: 'Samora Machel Avenue, Harare',
-      city: 'Harare',
-      distance: 0.8,
-      rating: 4.5,
-      checkInBonus: 50,
-      pointsMultiplier: 2.0,
-      isOpen: true,
-      openingHours: '8:00 AM - 10:00 PM',
-      phone: '+263 4 123456',
-      description: 'Famous for our flame-grilled PERi-PERi chicken. Check in to earn double points on all purchases!',
-      specialOffers: ['2x Points on Check-in', 'Free Drink with Main Meal', 'Loyalty Member Discounts'],
-      icon: <RestaurantIcon />,
-      color: '#FF5722',
-    },
-    {
-      id: '2',
-      name: 'Pick n Pay Borrowdale',
-      category: 'GROCERY',
-      address: 'Borrowdale Road, Harare',
-      city: 'Harare',
-      distance: 2.1,
-      rating: 4.3,
-      checkInBonus: 30,
-      pointsMultiplier: 1.5,
-      isOpen: true,
-      openingHours: '7:00 AM - 9:00 PM',
-      phone: '+263 4 234567',
-      description: 'Your one-stop shop for groceries and household essentials. Earn bonus points on fresh produce!',
-      specialOffers: ['Bonus Points on Fresh Produce', 'Member-Only Deals', 'Weekly Specials'],
-      icon: <GroceryIcon />,
-      color: '#4CAF50',
-    },
-    {
-      id: '3',
-      name: 'Edgars Eastgate',
-      category: 'RETAIL',
-      address: 'Eastgate Shopping Centre, Harare',
-      city: 'Harare',
-      distance: 1.5,
-      rating: 4.2,
-      checkInBonus: 40,
-      pointsMultiplier: 1.8,
-      isOpen: true,
-      openingHours: '9:00 AM - 7:00 PM',
-      phone: '+263 4 345678',
-      description: 'Fashion, beauty, and lifestyle products. Check in for exclusive member discounts!',
-      specialOffers: ['Member-Only Sales', 'Fashion Styling Service', 'Beauty Consultation'],
-      icon: <ShoppingIcon />,
-      color: '#2196F3',
-    },
-    {
-      id: '4',
-      name: 'Clicks Pharmacy',
-      category: 'PHARMACY',
-      address: 'Avondale Shopping Centre, Harare',
-      city: 'Harare',
-      distance: 3.2,
-      rating: 4.6,
-      checkInBonus: 25,
-      pointsMultiplier: 1.3,
-      isOpen: true,
-      openingHours: '8:00 AM - 8:00 PM',
-      phone: '+263 4 456789',
-      description: 'Health and beauty products with professional pharmacy services. Earn points on health essentials!',
-      specialOffers: ['Health Check-ups', 'Beauty Product Samples', 'Pharmacy Consultation'],
-      icon: <PharmacyIcon />,
-      color: '#9C27B0',
-    },
-    {
-      id: '5',
-      name: 'Puma Energy',
-      category: 'SERVICE',
-      address: 'Enterprise Road, Harare',
-      city: 'Harare',
-      distance: 4.1,
-      rating: 4.0,
-      checkInBonus: 20,
-      pointsMultiplier: 1.2,
-      isOpen: true,
-      openingHours: '24/7',
-      phone: '+263 4 567890',
-      description: 'Fuel and convenience store. Check in for fuel discounts and bonus points!',
-      specialOffers: ['Fuel Discounts', 'Car Wash Service', 'Convenience Store Items'],
-      icon: <GasIcon />,
-      color: '#FF9800',
-    },
-    {
-      id: '6',
-      name: 'CBZ Bank',
-      category: 'BANKING',
-      address: 'Corner First Street & Samora Machel, Harare',
-      city: 'Harare',
-      distance: 0.5,
-      rating: 4.4,
-      checkInBonus: 35,
-      pointsMultiplier: 1.6,
-      isOpen: true,
-      openingHours: '8:00 AM - 3:00 PM',
-      phone: '+263 4 678901',
-      description: 'Leading Zimbabwean bank. Check in for financial services and earn loyalty points!',
-      specialOffers: ['Financial Advisory', 'Investment Opportunities', 'Loan Services'],
-      icon: <BankIcon />,
-      color: '#607D8B',
-    },
-  ];
-
   const categories = [
     { value: 'ALL', label: 'All Categories', icon: <LocationIcon />, color: '#1976D2' },
     { value: 'RESTAURANT', label: 'Restaurants', icon: <RestaurantIcon />, color: '#FF5722' },
@@ -199,16 +87,62 @@ const MapScreen: React.FC<MapScreenProps> = ({ user }) => {
   const loadMapData = React.useCallback(async () => {
     try {
       setIsLoading(true);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setPartnerLocations(zimbabweanPartners);
+      const partnersFromApi = await backendService.getNearbyPartners();
+
+      const getCategoryDetails = (type: string): { icon: React.ReactNode; color: string; category: PartnerLocation['category'] } => {
+          switch (type) {
+              case 'RESTAURANT':
+                  return { icon: <RestaurantIcon />, color: '#FF5722', category: 'RESTAURANT' };
+              case 'RETAIL':
+                  return { icon: <ShoppingIcon />, color: '#2196F3', category: 'RETAIL' };
+              case 'GROCERY':
+                  return { icon: <GroceryIcon />, color: '#4CAF50', category: 'GROCERY' };
+              case 'PHARMACY':
+                  return { icon: <PharmacyIcon />, color: '#9C27B0', category: 'PHARMACY' };
+              case 'SERVICE':
+                  return { icon: <GasIcon />, color: '#FF9800', category: 'SERVICE' };
+              case 'BANKING':
+                  return { icon: <BankIcon />, color: '#607D8B', category: 'BANKING' };
+              default:
+                  return { icon: <LocationIcon />, color: '#757575', category: 'SERVICE' };
+          }
+      };
+
+      const mappedPartners: PartnerLocation[] = partnersFromApi.map(p => {
+        const categoryDetails = getCategoryDetails(p.type);
+        return {
+            id: p.id,
+            name: p.name,
+            category: categoryDetails.category,
+            address: p.location,
+            city: 'Harare', // Default value
+            distance: p.distance,
+            rating: p.rating,
+            checkInBonus: 50, // Default value
+            pointsMultiplier: 1.5, // Default value
+            isOpen: p.status === 'ACTIVE',
+            openingHours: p.businessHours,
+            phone: p.contactPhone,
+            description: p.currentPromotions.map(promo => promo.title).join(', ') || `A ${p.type.toLowerCase()} partner.`,
+            specialOffers: p.currentPromotions.map(promo => promo.title),
+            icon: categoryDetails.icon,
+            color: categoryDetails.color,
+        };
+      });
+
+      setPartnerLocations(mappedPartners);
     } catch (error) {
       console.error('Failed to load partner locations:', error);
     } finally {
       setIsLoading(false);
     }
-  }, [setIsLoading, setPartnerLocations]);
+  }, [backendService]);
 
-  const filterLocations = React.useCallback(() => { // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    loadMapData();
+  }, [loadMapData]);
+
+  const filterLocations = React.useCallback(() => {
     let filtered = partnerLocations;
 
     if (searchQuery) {

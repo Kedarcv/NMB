@@ -122,7 +122,18 @@ class AIService {
     }
   }
 
-  public async analyzeSentiment(text: string): Promise<SentimentAnalysisResult> {
+  public async analyzeSentiment(text: string, userId?: string): Promise<SentimentAnalysisResult> {
+    if (userId === 'guest') {
+        return {
+            sentiment: 'positive',
+            score: 0.8,
+            confidence: 0.95,
+            positiveWords: ['love', 'amazing', 'great'],
+            negativeWords: [],
+            suggestions: ['Share your positive feedback with the merchant!'],
+            emotionalTone: 'joyful',
+        };
+    }
     try {
       // Use Python AI service (BERT-based)
       const response = await axios.post(`${this.PYTHON_AI_URL}/analyze-sentiment`, {
@@ -155,6 +166,13 @@ class AIService {
 
 
   public async generateRecommendations(userId: string, userData: any): Promise<AIRecommendation[]> {
+    if (userId === 'guest') {
+      return [
+        { id: 'rec1', type: 'EARNING_TIP', title: 'Double Points at Nandos', description: 'Visit Nandos this weekend to earn double points on all purchases.', confidence: 0.95, priority: 'HIGH', actionRequired: true, estimatedValue: 100, category: 'Dining' },
+        { id: 'rec2', type: 'REDEMPTION_OPPORTUNITY', title: 'Discount on Pick n Pay', description: 'You have enough points to get a $5 discount at Pick n Pay.', confidence: 0.9, priority: 'MEDIUM', actionRequired: true, estimatedValue: 50, category: 'Groceries' },
+        { id: 'rec3', type: 'PERSONALIZED_OFFER', title: 'Edgars Fashion Offer', description: 'Based on your shopping habits, here is a 10% discount voucher for Edgars.', confidence: 0.85, priority: 'MEDIUM', actionRequired: true, estimatedValue: 75, category: 'Retail' },
+      ];
+    }
     try {
       // Use Python AI service for personalized recommendations
       const response = await axios.post(`${this.PYTHON_AI_URL}/generate-recommendations`, {
@@ -190,6 +208,12 @@ class AIService {
 
 
   public async generatePredictiveInsights(userId: string, userData: any): Promise<PredictiveInsight[]> {
+    if (userId === 'guest') {
+        return [
+            { id: 'pi1', type: 'CHURN_RISK', title: 'Potential Churn Risk', description: 'Your engagement has been decreasing. We miss you!', probability: 0.75, timeframe: 'Next 30 days', actionable: true, recommendedActions: ['Complete a quiz', 'Visit a partner store'], impact: 'HIGH' },
+            { id: 'pi2', type: 'ENGAGEMENT_OPPORTUNITY', title: 'New Partner Nearby', description: 'A new partner store, "The Book Nook", has opened near you. Visit them to earn bonus points.', probability: 0.9, timeframe: 'This week', actionable: true, recommendedActions: ['Visit The Book Nook'], impact: 'MEDIUM' },
+        ];
+    }
     try {
       // Use Python AI service for predictive insights
       const response = await axios.post(`${this.PYTHON_AI_URL}/predictive-insights`, {
@@ -225,6 +249,12 @@ class AIService {
 
 
   public async analyzeUserBehavior(userId: string, userData: any): Promise<UserBehaviorPattern[]> {
+    if (userId === 'guest') {
+        return [
+            { category: 'Dining', frequency: 2, averageValue: 75, trend: 'STABLE', seasonality: true, peakTimes: ['Weekends', 'Evenings'], recommendations: ['Try the new menu at Nandos', 'Look for dining offers on weekdays'] },
+            { category: 'Groceries', frequency: 1, averageValue: 120, trend: 'INCREASING', seasonality: false, peakTimes: ['Saturday mornings'], recommendations: ['Buy fresh produce to earn bonus points', 'Create a shopping list to maximize savings'] },
+        ];
+    }
     try {
       // Use Python AI service for behavior analysis
       const response = await axios.post(`${this.PYTHON_AI_URL}/analyze-behavior`, {

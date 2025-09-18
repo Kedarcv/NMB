@@ -46,6 +46,7 @@ import {
   Settings as SettingsIcon,
 } from '@mui/icons-material';
 import { User } from '../services/UnifiedBackendService';
+import UnifiedBackendService from '../services/UnifiedBackendService';
 import AIService, { 
   AIRecommendation, 
   PredictiveInsight, 
@@ -86,15 +87,18 @@ const InsightsScreen: React.FC<InsightsScreenProps> = ({ user }) => {
       // Initialize AI service
       await aiService.initialize();
       
+      const backendService = UnifiedBackendService.getInstance();
+      const loyaltyPoints = await backendService.getLoyaltyPoints(user.id);
+
       // Load user data for AI analysis
       const userData = {
-        pointsBalance: 1250, // This would come from backend
-        recentActivity: 'High engagement, completed daily tasks',
-        preferredCategories: 'Dining, Shopping, Entertainment',
-        engagementLevel: 'High',
-        lastLogin: new Date().toISOString(),
-        totalPoints: 1250,
-        streak: 15,
+        pointsBalance: loyaltyPoints?.pointsBalance || 0,
+        recentActivity: 'High engagement, completed daily tasks', // This can be fetched from transactions
+        preferredCategories: 'Dining, Shopping, Entertainment', // This can be inferred from behavior
+        engagementLevel: 'High', // This can be calculated
+        lastLogin: new Date().toISOString(), // This should be stored for the user
+        totalPoints: loyaltyPoints?.totalEarned || 0,
+        streak: 15, // This should be calculated and stored
       };
 
       // Load all insights in parallel
@@ -123,7 +127,7 @@ const InsightsScreen: React.FC<InsightsScreenProps> = ({ user }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [aiService, user.id, setRecommendations, setPredictiveInsights, setBehaviorPatterns, setInsightMetrics, setIsLoading]);
+  }, [aiService, user.id]);
 
   const handleInsightClick = (insight: PredictiveInsight) => {
     setSelectedInsight(insight);
@@ -135,7 +139,7 @@ const InsightsScreen: React.FC<InsightsScreenProps> = ({ user }) => {
 
     try {
       setIsAnalyzingSentiment(true);
-      const result = await aiService.analyzeSentiment(sentimentText);
+      const result = await aiService.analyzeSentiment(sentimentText, user.id);
       setSentimentResult(result);
       setShowSentimentDialog(true);
     } catch (error) {

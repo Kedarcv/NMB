@@ -196,6 +196,11 @@ const InteractiveMap: React.FC<InteractiveMapProps> = ({
     }
   }, [backendService, setLoading, setPartners, userLocation, updatePartnerDistances]);
 
+  useEffect(() => {
+    getUserLocation();
+    loadPartners();
+  }, [getUserLocation, loadPartners]);
+
   // Removed unused filterPartners function
 
   const handlePartnerSelect = (partner: Partner) => {
