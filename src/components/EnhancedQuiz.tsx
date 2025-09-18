@@ -132,8 +132,6 @@ const EnhancedQuiz: React.FC<EnhancedQuizProps> = ({ quizId, onComplete }) => {
     calculateScore();
   }, [calculateScore]);
 
-  // Removed duplicate startQuiz function
-
   const handleAnswerSelect = (questionId: string, answer: string) => {
     setSelectedAnswers(prev => ({
       ...prev,

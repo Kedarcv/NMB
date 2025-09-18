@@ -342,7 +342,6 @@ const GamificationScreen: React.FC<GamificationScreenProps> = ({ user }) => {
             break;
           case 'COMPLETE_QUIZ':
             // Show quiz dialog for verification
-            setQuizDialog({ open: true, taskId: taskId, points: task.points });
             return;
           case 'EARN_POINTS':
             // Check if user has earned points today
@@ -351,7 +350,6 @@ const GamificationScreen: React.FC<GamificationScreenProps> = ({ user }) => {
             break;
           case 'VISIT_LOCATION':
             // Show location verification dialog
-            setLocationVerificationDialog({ open: true, taskId: taskId, points: task.points });
             return;
           case 'COMPLETE_PROFILE':
             // Check if profile is complete
