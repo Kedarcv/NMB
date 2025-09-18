@@ -123,8 +123,8 @@ const MapScreen: React.FC<MapScreenProps> = ({ user }) => {
             isOpen: p.status === 'ACTIVE',
             openingHours: p.businessHours,
             phone: p.contactPhone,
-            description: p.currentPromotions.map(promo => promo.title).join(', ') || `A ${p.type.toLowerCase()} partner.`,
-            specialOffers: p.currentPromotions.map(promo => promo.title),
+            description: p.currentPromotions.map((promo: { title: string }) => promo.title).join(', ') || `A ${p.type.toLowerCase()} partner.`,
+            specialOffers: p.currentPromotions.map((promo: { title: string }) => promo.title),
             icon: categoryDetails.icon,
             color: categoryDetails.color,
         };

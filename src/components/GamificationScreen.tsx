@@ -192,7 +192,7 @@ const GamificationScreen: React.FC<GamificationScreenProps> = ({ user }) => {
       const quizQuestions = await backendService.generateQuizQuestions('General', 'easy', 3);
       const mappedQuizzes: Quiz[] = quizQuestions.map((q): Quiz => {
         const options = q.options.split('|');
-        const correctIndex = options.findIndex(opt => opt === q.correctAnswer);
+        const correctIndex = options.findIndex((opt: string) => opt === q.correctAnswer);
         return {
             id: q.id,
             title: `Quiz: ${q.difficulty}`,
